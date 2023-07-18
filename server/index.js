@@ -4,8 +4,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import { router } from "./router/index.js";
+import connectDB from "./config/db.js";
 
 dotenv.config();
+
+connectDB();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
