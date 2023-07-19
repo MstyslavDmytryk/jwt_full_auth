@@ -1,7 +1,7 @@
 import ApiError from '../exceptions/api-error.js';
 import tokenService from '../service/token-service.js';
 
-export default function authenticateMiddleware(req, res, next) {
+export default async function authenticateMiddleware(req, res, next) {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
@@ -13,7 +13,13 @@ export default function authenticateMiddleware(req, res, next) {
       return next(ApiError.UnauthorizedError());
     }
 
-    const userData = tokenService.validateAccessToken(accessToken);
+    console.log('Access Token:', accessToken);
+
+    const userData = await tokenService.validateAccessToken(accessToken);
+    console.log('Decoded User Data:', userData);
+
+
+
     if (!userData) {
       return next(ApiError.UnauthorizedError());
     }
@@ -21,6 +27,7 @@ export default function authenticateMiddleware(req, res, next) {
     req.user = userData;
     next();
   } catch (e) {
+    console.error('Error during authentication:', e);
     return next(ApiError.UnauthorizedError());
   }
 }

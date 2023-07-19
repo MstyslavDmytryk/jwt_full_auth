@@ -9,7 +9,7 @@ import ApiError from '../exceptions/api-error.js';
 export async function registration(email, password) {
     const candidate = await UserModel.findOne({ email });
     if (candidate) {
-        throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже существует`);
+        throw ApiError.BadRequest(`User with email ${email} already exists`);
     }
     const hashPassword = await bcrypt.hash(password, 3);
     const activationLink = uuidv4(); // v34fa-asfasf-142saf-sa-asf
@@ -27,7 +27,7 @@ export async function registration(email, password) {
 export async function activate(activationLink) {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
-        throw ApiError.BadRequest('Неккоректная ссылка активации');
+        throw ApiError.BadRequest('Wrong activation link');
     }
     user.isActivated = true;
     await user.save();
@@ -36,11 +36,11 @@ export async function activate(activationLink) {
 export async function login(email, password) {
     const user = await UserModel.findOne({ email });
     if (!user) {
-        throw ApiError.BadRequest('Пользователь с таким email не найден');
+        throw ApiError.BadRequest('User with this email not found');
     }
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) {
-        throw ApiError.BadRequest('Неверный пароль');
+        throw ApiError.BadRequest('Wrond password');
     }
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
