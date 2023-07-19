@@ -1,12 +1,20 @@
-import { Router } from "express";
-import UserController from "../controller/user-controller.js";
+import { Router } from 'express';
+import userController from '../controllers/user-controller.js';
+import { body } from 'express-validator';
+import authenticateMiddleware from '../middlewares/auth-middleware.js'
+
 const router = Router();
 
-router.post("/registration", UserController.registration);
-router.post("/login", UserController.login);
-router.post("/logout", UserController.logout);
-router.get("/activate/:link", UserController.activate);
-router.get("/refresh", UserController.refresh);
-router.get("/users", UserController.getUsers);
+router.post(
+  '/registration',
+  body('email').isEmail(),
+  body('password').isLength({ min: 3, max: 32 }),
+  userController.registration
+);
+router.post('/login', userController.login);
+router.post('/logout', userController.logout);
+router.get('/activate/:link', userController.activate);
+router.get('/refresh', userController.refresh);
+router.get('/users', authenticateMiddleware, userController.getUsers);
 
-export { router };
+export default router;

@@ -9,5 +9,3 @@ export default class UserDto {
     this.isActivated = model.isActivated;
   }
 }
-
-
